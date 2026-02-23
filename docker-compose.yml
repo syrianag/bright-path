@@ -1,3 +1,4 @@
+
 version: "3.9"
 
 services:
@@ -11,4 +12,19 @@ services:
     volumes:
       - .:/app
     command: npm run dev
+
+  db:
+    image: postgres:18
+    container_name: bright-path-db
+    environment:
+      POSTGRES_DB: brightpath_db
+      POSTGRES_USER: brightpath_user
+      POSTGRES_PASSWORD: brightpath_pass_123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
 
