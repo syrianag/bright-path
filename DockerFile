@@ -3,12 +3,13 @@ FROM node:20-alpine
 ## When we install node:20-alpine it alows nom to be added to that specified container
 
 # 2️⃣ Set working directory inside container
-WORKDIR /app
+WORKDIR /bright-path
 ## WORKDIR is calling that specific directory which would be /app in this case
 
 # 3️⃣ Copy dependency files first (for caching)
 COPY package.json package-lock.json* ./
 ## COPY allows Docker to cache npm install and the two json dependencies 
+## . . = source to container (they are traveling to each side)
 
 # 4️⃣ Install dependencies
 RUN npm install
