@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.3.0",
+    "eslint": "^10.0.2",
     "prisma": "^6.19.2"
   }
 }
