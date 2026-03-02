@@ -38,4 +38,17 @@ This is telling docker to pull and install the latest version of Node
     "dev": "next dev",
     "start": "next start"
 
+-------------------------------------------------------------------------------------
+
+## Issue: Postgres Container Fails to Start (Missing Password)
+
+### Error Message
+
+## Error: Database is uninitialized and superuser password is not specified.
+## You must specify POSTGRES_PASSWORD to a non-empty value for the superuser.
+
+## Solution: Updated YAML file 
+
+----------------------------------------------------------------------------------------
+
 
