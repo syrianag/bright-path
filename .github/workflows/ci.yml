@@ -13,17 +13,79 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    # Environment variables available to ALL steps
+    env:
+      NODE_ENV: test
+      POSTGRES_DB: brightpath_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/brightpath_db
+
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
 
+      # 4️⃣ Verify Docker & Docker Compose
+      - name: Verify Docker installation
+        run: |
+          docker --version
+          docker compose version
+
+      # 5️⃣ Start Docker services
+      - name: Start Docker Compose services
+        run: docker compose up -d
+
+      # 6️⃣ Wait for Postgres to be ready
+      - name: Wait for database to be ready
+        run: |
+          echo "Waiting for Postgres..."
+          for i in {1..30}; do
+            if docker compose exec db pg_isready -U postgres >/dev/null 2>&1; then
+              echo "Postgres is ready"
+              break
+            fi
+            echo "Waiting for Postgres ($i)..."
+            sleep 2
+          done
+
+      # 7️⃣ Generate Prisma Client
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      # 8️⃣ Run database migrations (optional but recommended)
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+
+      # 9️⃣ Run tests
       - name: Run tests
         run: npm test
+
+      # 🔟 Collect logs (always runs, even on failure)
+      - name: Collect Docker logs
+        if: always()
+        run: |
+          mkdir -p artifacts
+          docker compose ps > artifacts/docker_ps.txt || true
+          docker compose logs > artifacts/docker_logs.txt || true
+
+      # 1️⃣1️⃣ Upload artifacts
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts
+          path: artifacts
