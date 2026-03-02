@@ -46,6 +46,21 @@ GitHub Actions workflow is defined in `.github/workflows/ci.yml`.
 ### License
 ISC
 
+### Test Ran 
+
+### SETBACKS / Failpoints 
+
+### Evidence / Screenshots 
+
+Command: docker compose ps — shows running containers and their status.
+
+Command: docker compose down -v - 
+
+Command: docker compose up -d - 
+
+
+
+
 
 
 
