@@ -1,12 +1,42 @@
-## BrightPath Tutoring
+# BrightPath Tutoring
 
-BrightPath Tutoring is a Next.js application with Prisma ORM for managing tutoring associates and users. The project uses PostgreSQL for data storage and supports Docker and CI workflows.
+BrightPath Tutoring is a **containerized Next.js application** that uses **Prisma ORM** with **PostgreSQL** to manage tutoring associates and users.  
+The project is designed with **Docker**, **GitHub Actions CI**, and cloud-ready workflows in mind.
 
-### Features
-- Next.js frontend and API routes
-- Prisma ORM with PostgreSQL
-- Docker support
-- GitHub Actions CI
+---
+
+## 🚀 Tech Stack
+
+- **Frontend / API**: Next.js
+- **ORM**: Prisma
+- **Database**: PostgreSQL (Neon for cloud, Postgres container for local)
+- **Containerization**: Docker & Docker Compose
+- **CI**: GitHub Actions
+- **Runtime**: Node.js 20
+
+---
+
+## ✨ Features
+
+- Next.js frontend with API routes
+- Prisma ORM with relational models
+- PostgreSQL database
+- Dockerized development environment
+- GitHub Actions CI pipeline
+- Cloud-ready database configuration (Neon)
+
+## 📂 Project Structure
+
+├── app/ # Next.js app
+├── prisma/
+│ ├── schema.prisma # Prisma schema
+│ ├── migrations/ # Database migrations
+│ └── prisma.config.ts # Prisma v7 configuration
+├── docker-compose.yml
+├── Dockerfile
+├── .github/workflows/ci.yml
+├── .env.example
+└── README.md
 
 ### Getting Started
 1. Clone the repository:
@@ -45,3 +75,24 @@ GitHub Actions workflow is defined in `.github/workflows/ci.yml`.
 
 ### License
 ISC
+
+### Test Ran 
+
+### SETBACKS / Failpoints 
+
+### Evidence / Screenshots 
+
+Command: docker compose ps — shows running containers and their status.
+
+
+Command: docker compose down -v - 
+
+Command: docker compose up -d - 
+
+
+
+
+
+
+
+
