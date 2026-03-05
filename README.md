@@ -84,6 +84,7 @@ ISC
 
 Command: docker compose ps — shows running containers and their status.
 
+
 Command: docker compose down -v - 
 
 Command: docker compose up -d - 
