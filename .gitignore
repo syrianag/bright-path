@@ -4,5 +4,3 @@ node_modules
 .env.production
 
 /generated/prisma
-
-DATABASE_URL 

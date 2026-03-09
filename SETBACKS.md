@@ -101,3 +101,11 @@ Updated `prisma.config.ts` to include a `migrate` block with
 `datasourceUrl: process.env.DATABASE_URL`, removed the URL from
 `schema.prisma`, and ensured only one datasource block existed.
 
+----------------------------------------------------------------
+
+## Simulating Failure 
+Ran git revert HEAD to intentionally get rid of one change but instead got rid of all changes in that commit. 
+
+## Solution: git checkout HEAD~1 -- docker-compose.yml 
+This needs to be used when i only want to revert one file not all 
+

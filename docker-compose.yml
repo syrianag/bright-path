@@ -12,7 +12,7 @@ services:
       - .:/app
     command: npm run dev
 
-  database:
+  db:
     image: postgres:15
     container_name: bright-path-db
     environment:
