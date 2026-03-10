@@ -109,3 +109,8 @@ Ran git revert HEAD to intentionally get rid of one change but instead got rid o
 ## Solution: git checkout HEAD~1 -- docker-compose.yml 
 This needs to be used when i only want to revert one file not all 
 
+---------------------------------------------------------------------------------
+
+What is appleboy?
+
+// "appleboy/ssh-action is a GitHub Action that allows the CI pipeline to establish an SSH connection to a remote server, such as an AWS EC2 instance, so automated deployment commands can run remotely." 
