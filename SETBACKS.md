@@ -114,3 +114,10 @@ This needs to be used when i only want to revert one file not all
 What is appleboy?
 
 // "appleboy/ssh-action is a GitHub Action that allows the CI pipeline to establish an SSH connection to a remote server, such as an AWS EC2 instance, so automated deployment commands can run remotely." 
+
+-----------------------------------------------------------------------
+## Build & Test failed in Github 
+# Issue(s): 
+1. Build Docker container ❌ (Dockerfile missing)
+2. Load environment variables ❌ (.env missing)
+3. Start containers

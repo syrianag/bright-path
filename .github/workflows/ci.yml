@@ -38,8 +38,9 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     env:
-      # Inject DATABASE_URL securely from GitHub Secrets (never hardcode secrets!)
+      # Inject DATABASE_URL and POSTGRES_PASSWORD securely from GitHub Secrets (never hardcode secrets!)
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
