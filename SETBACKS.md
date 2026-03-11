@@ -121,3 +121,5 @@ What is appleboy?
 1. Build Docker container ❌ (Dockerfile missing)
 2. Load environment variables ❌ (.env missing)
 3. Start containers
+
+## Solution: Not resolved yet 
