@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+"use client";
 import { RefreshCw, Activity, Shield } from "lucide-react";
 import { Button } from "../components/ui/button";
 import StatusCard from "./StatusCard";
