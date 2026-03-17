@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { CheckCircle2, Wrench, ArrowRight, RotateCcw, Send, Wifi, RefreshCw, Trash2, Globe } from "lucide-react";
 import { Button } from "../components/ui/button";

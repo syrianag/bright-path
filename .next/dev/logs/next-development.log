@@ -1,0 +1,127 @@
+[00:00:03.029] Server  LOG     ✓ Ready in 1941ms
+[00:00:04.411] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:08.353] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:12.251] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:29.271] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:40.328] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:58.174] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:06.242] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:04.190] Server  ERROR   ⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './globals.css'
+  1 | import type { Metadata } from "next";
+> 2 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  3 |
+  4 | export const metadata: Metadata = {
+  5 |   title: "BrightPath",
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:09:04.219] Server  ERROR   ⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './globals.css'
+  1 | import type { Metadata } from "next";
+> 2 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  3 |
+  4 | export const metadata: Metadata = {
+  5 |   title: "BrightPath",
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:09:04.224] Server  ERROR   ⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './globals.css'
+  1 | import type { Metadata } from "next";
+> 2 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  3 |
+  4 | export const metadata: Metadata = {
+  5 |   title: "BrightPath",
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:09:04.230] Server  ERROR   ⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './globals.css'
+  1 | import type { Metadata } from "next";
+> 2 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  3 |
+  4 | export const metadata: Metadata = {
+  5 |   title: "BrightPath",
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:09:04.234] Server  ERROR   ⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './globals.css'
+  1 | import type { Metadata } from "next";
+> 2 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  3 |
+  4 | export const metadata: Metadata = {
+  5 |   title: "BrightPath",
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:09:05.083] Browser ERROR   ./app/layout.tsx:2:1
+Module not found: Can't resolve './globals.css'
+  1 | import type { Metadata } from "next";
+> 2 | import "./globals.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+  3 |
+  4 | export const metadata: Metadata = {
+  5 |   title: "BrightPath",
+
+https://nextjs.org/docs/messages/module-not-found
+[00:09:14.310] Server  LOG     ✓ Compiled in 1307ms
+[00:09:15.091] Browser ERROR   ./app/globals.css
+Error evaluating Node.js code
+Error: Failed to load external module file:///C:/Users/JAAdmin/bright-path/postcss.config.js: ReferenceError: module is not defined in ES module scope
+This file is being treated as an ES module because it has a '.js' file extension and 'C:\Users\JAAdmin\bright-path\package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+    [at Context.externalImport (turbopack:///[turbopack]/shared-node/base-externals-utils.ts:16:11)]
+    [at async <anonymous> (turbopack:///[project]/postcss.config.js_.loader.mjs:9:13)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+[00:09:54.838] Server  LOG     ✓ Compiled in 5s
+[00:09:56.509] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:36.833] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:21:10.363] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:22:56.653] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:22:57.229] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:22:58.521] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:22:59.118] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:23:03.371] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/status/page"
+[01:23:05.605] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:23:09.801] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:23:10.253] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:23:11.103] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:23:11.601] Server  ERROR   ⨯ Error: The default export is not a React Component in "/status/page"
+[01:23:11.785] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/status/page"
+[01:23:14.141] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:23:15.867] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:23:17.793] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:27:24.000] Server  LOG     ✓ Compiled in 991ms
+[01:27:38.415] Server  LOG     ✓ Compiled in 329ms
+[01:35:17.778] Server  LOG     ✓ Compiled in 611ms
+[01:35:34.156] Server  LOG     ✓ Compiled in 256ms
+[01:40:34.179] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:45:27.277] Server  ERROR   ⨯ Error: The default export is not a React Component in "/about/page"
+[01:45:27.769] Server  ERROR   ⨯ Error: The default export is not a React Component in "/about/page"
+[01:45:28.204] Server  LOG     ✓ Compiled in 217ms
+[01:45:29.010] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
