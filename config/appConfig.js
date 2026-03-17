@@ -9,4 +9,4 @@ const appConfig = {
   MAX_ASSOCIATES: parseInt(process.env.MAX_ASSOCIATES, 10) || 10 // Default to 10
 };
 
-module.exports = appConfig;
+export default appConfig;
