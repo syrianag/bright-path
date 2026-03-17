@@ -101,3 +101,25 @@ Updated `prisma.config.ts` to include a `migrate` block with
 `datasourceUrl: process.env.DATABASE_URL`, removed the URL from
 `schema.prisma`, and ensured only one datasource block existed.
 
+----------------------------------------------------------------
+
+## Simulating Failure 
+Ran git revert HEAD to intentionally get rid of one change but instead got rid of all changes in that commit. 
+
+## Solution: git checkout HEAD~1 -- docker-compose.yml 
+This needs to be used when i only want to revert one file not all 
+
+---------------------------------------------------------------------------------
+
+What is appleboy?
+
+// "appleboy/ssh-action is a GitHub Action that allows the CI pipeline to establish an SSH connection to a remote server, such as an AWS EC2 instance, so automated deployment commands can run remotely." 
+
+-----------------------------------------------------------------------
+## Build & Test failed in Github 
+# Issue(s): 
+1. Build Docker container ❌ (Dockerfile missing)
+2. Load environment variables ❌ (.env missing)
+3. Start containers
+
+## Solution: Not resolved yet 
