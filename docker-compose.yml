@@ -1,0 +1,34 @@
+
+services:
+  app:
+    build: .
+    container_name: bright-path-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - .:/bright-path
+    command: npm run dev
+
+  db:
+    image: postgres:15
+    container_name: bright-path-db
+    environment:
+      POSTGRES_DB: brightpath_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+

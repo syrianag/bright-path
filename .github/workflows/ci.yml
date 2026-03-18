@@ -1,0 +1,91 @@
+
+# ===============================
+#         CI/CD PIPELINE
+# ===============================
+# Demonstrates TS.5.1 (Automated Deployment) and TS.5.2 (Cloud Config & Security)
+# All credentials are injected via GitHub Secrets for security.
+#
+# See EVIDENCE.md for skill mapping and screenshot instructions.
+#
+# ---
+#
+# Why secrets should NOT be stored directly in this file:
+#   - Secrets in YAML are visible to anyone with repo access and can be leaked in logs or PRs.
+#   - GitHub Secrets are encrypted, access-controlled, and injected at runtime only.
+#   - This prevents accidental exposure and meets security best practices.
+#
+# How GitHub masks secrets in logs:
+#   - Any value injected from secrets.* is automatically replaced with *** in logs if echoed or printed.
+#   - Attempting to echo a secret (e.g., echo $DATABASE_URL) will show *** instead of the real value.
+#
+# How job dependencies work:
+#   - The 'deploy' job uses 'needs: build-and-test' so it only runs if build-and-test succeeds.
+#   - If build-and-test fails, deploy is skipped, preventing broken code from being deployed.
+#
+# How to identify failed steps:
+#   - In the Actions log, failed steps are marked with a red X and show error output.
+#   - You can expand each step to see which command failed and why.
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      # Inject DATABASE_URL and POSTGRES_PASSWORD securely from GitHub Secrets (never hardcode secrets!)
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Create .env file from secrets
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+          echo "NODE_ENV=production" >> .env
+      - name: Build containers
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build # Build Docker images
+      - name: Start database service
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d db # Start only DB for CI tasks
+      - name: Wait for database
+        run: sleep 15 # Wait for DB to be ready (use healthcheck in production)
+      - name: Run migrations
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps app npm exec --yes --package=prisma@6.19.2 prisma migrate deploy
+      # --- Failure demonstration step ---
+      - name: Lint code (intentional fail if lint errors)
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps app npm run lint
+        # This step will fail the job if linting errors are present, demonstrating pipeline failure detection.
+      # --- End failure demonstration ---
+      - name: Tear down
+        if: always()
+        run: |
+          touch .env
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v # Always clean up containers/volumes
+
+  deploy:
+    needs: build-and-test # Only run if build-and-test succeeds
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          # All secrets are injected securely from GitHub Secrets
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            if [ ! -d ~/my-app ]; then
+              git clone https://github.com/syrianag/bright-path.git ~/my-app
+            fi
+            cd ~/my-app && git pull origin main
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml down
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml up --build -d
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm app npm exec --yes --package=prisma@6.19.2 prisma migrate deploy
