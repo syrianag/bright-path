@@ -57,7 +57,7 @@ jobs:
       - name: Wait for database
         run: sleep 15 # Wait for DB to be ready (use healthcheck in production)
       - name: Run migrations
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps app ./node_modules/.bin/prisma migrate deploy
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps app npx --no-install prisma migrate deploy
       # --- Failure demonstration step ---
       - name: Lint code (intentional fail if lint errors)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps app npm run lint
@@ -86,4 +86,4 @@ jobs:
             cd ~/my-app && git pull origin main
             docker compose -f docker-compose.yml -f docker-compose.ci.yml down
             docker compose -f docker-compose.yml -f docker-compose.ci.yml up --build -d
-            docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm app ./node_modules/.bin/prisma migrate deploy
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm app npx --no-install prisma migrate deploy
