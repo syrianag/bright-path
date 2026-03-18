@@ -52,15 +52,15 @@ jobs:
           echo "NODE_ENV=production" >> .env
       - name: Build containers
         run: docker compose build # Build Docker images
-      - name: Start services
-        run: docker compose up -d # Start containers in background
+      - name: Start database service
+        run: docker compose up -d db # Start only DB for CI tasks
       - name: Wait for database
         run: sleep 15 # Wait for DB to be ready (use healthcheck in production)
       - name: Run migrations
-        run: docker compose exec -T app npx prisma migrate deploy
+        run: docker compose run --rm --no-deps app npx prisma migrate deploy
       # --- Failure demonstration step ---
       - name: Lint code (intentional fail if lint errors)
-        run: docker compose exec -T app npm run lint
+        run: docker compose run --rm --no-deps app npm run lint
         # This step will fail the job if linting errors are present, demonstrating pipeline failure detection.
       # --- End failure demonstration ---
       - name: Tear down
@@ -86,4 +86,4 @@ jobs:
             cd ~/my-app && git pull origin main
             docker compose down
             docker compose up --build -d
-            docker compose exec app npx prisma migrate deploy
+            docker compose run --rm app npx prisma migrate deploy
