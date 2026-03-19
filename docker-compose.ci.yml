@@ -1,4 +1,7 @@
 services:
   app:
-    volumes: []
+    # Keep the host bind-mount for source code (from docker-compose.yml),
+    # but ensure `node_modules` isn't shadowed by an empty host directory.
+    volumes:
+      - /bright-path/node_modules
     command: npm run start
