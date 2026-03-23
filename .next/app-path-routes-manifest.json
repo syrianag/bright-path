@@ -1,0 +1,17 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/about/page": "/about",
+  "/api/associates/route": "/api/associates",
+  "/api/auth/login/route": "/api/auth/login",
+  "/api/auth/logout/route": "/api/auth/logout",
+  "/api/route": "/api",
+  "/associates/dashboard/page": "/associates/dashboard",
+  "/associates/login/page": "/associates/login",
+  "/associates/progress/page": "/associates/progress",
+  "/associates/quiz/[quizId]/page": "/associates/quiz/[quizId]",
+  "/associates/quiz/page": "/associates/quiz",
+  "/page": "/",
+  "/status/page": "/status",
+  "/troubleshoot/page": "/troubleshoot"
+}

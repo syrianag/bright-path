@@ -12,7 +12,7 @@ COPY package.json package-lock.json* ./
 ## . . = source to container (they are traveling to each side)
 
 # 4️⃣ Install dependencies
-RUN npm install
+RUN npm ci --include=dev
 ## I will then run this command to install all important dependencies and package files
 
 # 5️⃣ Copy the rest of the app
