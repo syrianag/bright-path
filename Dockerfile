@@ -1,37 +1,28 @@
-# 1️⃣ Use official Node.js image
-FROM node:20-alpine 
-## When we install node:20-alpine it alows nom to be added to that specified container
+FROM node:20-alpine AS builder
 
-# 2️⃣ Set working directory inside container
-WORKDIR /bright-path
-## WORKDIR is calling that specific directory which would be /app in this case
+WORKDIR /app
 
-# 3️⃣ Copy dependency files first (for caching)
-COPY package.json package-lock.json* ./
-## COPY allows Docker to cache npm install and the two json dependencies 
-## . . = source to container (they are traveling to each side)
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
 
-# 4️⃣ Install dependencies
-RUN npm ci --include=dev
-## I will then run this command to install all important dependencies and package files
+RUN npm ci
 
-# 5️⃣ Copy the rest of the app
 COPY . .
-## This step then copies the rest of the applications source code into the container
 
-# 6️⃣ Generate Prisma client
 RUN npx prisma generate
-## Then I will run this command to generate Prisma Client inside the container; I can also run generate prisma studio to make sure everything is in the right location 
-
-# 7️⃣ Build Next.js app
 RUN npm run build
-## This helps build the Next.js application for production 
-## Dev -> Test -> Production
 
-# 8️⃣ Expose Next.js port
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./package.json
+
 EXPOSE 3000
-## This step will tell Docker which port the app needs to listen to 
 
-# 9️⃣ Start the app
-CMD ["npm", "run", "start"]
-## Lastly, I'll urn these commands when the container starts in production mode 
+CMD ["node", "server.js"]
