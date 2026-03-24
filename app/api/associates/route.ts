@@ -9,14 +9,10 @@
  */
 import { NextResponse } from 'next/server';
 import appConfig from '../../../config/appConfig.js';
-
-/** Replace with a real database query in production. */
-function countAssociates() {
-  return 7;
-}
+import prisma from '@/lib/prisma';
 
 export async function GET() {
-  const currentCount = countAssociates();
+  const currentCount = await prisma.associates.count();
   const maxAllowed = appConfig.MAX_ASSOCIATES;
 
   if (currentCount < maxAllowed) {

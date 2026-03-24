@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/syrianag/bright-path#readme",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^6.19.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -63,6 +64,7 @@
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
     "next-themes": "^0.4.6",
+    "pg": "^8.20.0",
     "postcss": "^8.5.8",
     "prisma": "^6.19.2",
     "react": "^19.2.4",
