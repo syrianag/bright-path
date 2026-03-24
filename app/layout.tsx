@@ -4,6 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "BrightPath",
   description: "System Support Center",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
