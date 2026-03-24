@@ -9,9 +9,10 @@
  */
 import { NextResponse } from 'next/server';
 import appConfig from '../../../config/appConfig.js';
-import prisma from '@/lib/prisma';
+import { getPrismaClient } from '@/lib/prisma';
 
 export async function GET() {
+  const prisma = getPrismaClient();
   const currentCount = await prisma.associates.count();
   const maxAllowed = appConfig.MAX_ASSOCIATES;
 
