@@ -65,7 +65,7 @@ jobs:
         run: docker compose -f docker-compose.yml run --rm --no-deps -e DATABASE_URL="$DATABASE_URL" app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
       # --- Failure demonstration step ---
       - name: Lint code (intentional fail if lint errors)
-        run: docker compose -f docker-compose.yml run --rm --no-deps app npm run lint
+        run: docker compose -f docker-compose.yml run --rm --no-deps app npm exec --yes --package=eslint -- eslint
         # This step will fail the job if linting errors are present, demonstrating pipeline failure detection.
       # --- End failure demonstration ---
       - name: Tear down
