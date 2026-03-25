@@ -44,6 +44,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
       - name: Create .env file from secrets
         run: |
           if [[ "${DATABASE_URL:-}" =~ ^postgres(ql)?:// ]]; then
@@ -63,11 +71,6 @@ jobs:
         run: sleep 15 # Wait for DB to be ready (use healthcheck in production)
       - name: Run migrations
         run: docker compose -f docker-compose.yml run --rm --no-deps -e DATABASE_URL="$DATABASE_URL" app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
-      # --- Failure demonstration step ---
-      - name: Lint code (intentional fail if lint errors)
-        run: docker compose -f docker-compose.yml run --rm --no-deps app npm exec --yes --package=eslint -- eslint
-        # This step will fail the job if linting errors are present, demonstrating pipeline failure detection.
-      # --- End failure demonstration ---
       - name: Tear down
         if: always()
         run: |
