@@ -64,13 +64,13 @@ jobs:
           echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
           echo "NODE_ENV=production" >> .env
       - name: Build containers
-        run: docker-compose -f docker-compose.yml build # Build Docker images
+        run: docker compose -f docker-compose.yml build # Build Docker images
       - name: Start database service
-        run: docker-compose -f docker-compose.yml up -d db # Start only DB for CI tasks
+        run: docker compose -f docker-compose.yml up -d db # Start only DB for CI tasks
       - name: Wait for database
         run: sleep 15 # Wait for DB to be ready (use healthcheck in production)
       - name: Run migrations
-        run: docker-compose -f docker-compose.yml run --rm --no-deps -e DATABASE_URL="$DATABASE_URL" app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
+        run: docker compose -f docker-compose.yml run --rm --no-deps -e DATABASE_URL="$DATABASE_URL" app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
       - name: Tear down
         if: always()
         run: |
@@ -94,6 +94,22 @@ jobs:
               git clone https://github.com/syrianag/bright-path.git ~/my-app
             fi
             cd ~/my-app && git pull origin main
-            docker-compose -f docker-compose.yml down
-            docker-compose -f docker-compose.yml up --build -d
-            docker-compose -f docker-compose.yml run --rm app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
+            # Ensure Docker Compose plugin is available (install if missing)
+            if ! docker compose version >/dev/null 2>&1; then
+              echo "Docker Compose plugin not found — installing..."
+              ARCH="$(uname -m)"
+              if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then
+                BIN_ARCH="linux-x86_64"
+              elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+                BIN_ARCH="linux-aarch64"
+              else
+                BIN_ARCH="linux-x86_64"
+              fi
+              COMPOSE_VER="v2.21.0"
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              sudo curl -fSL "https://github.com/docker/compose/releases/download/${COMPOSE_VER}/docker-compose-${BIN_ARCH}" -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+            fi
+            docker compose -f docker-compose.yml down
+            docker compose -f docker-compose.yml up --build -d
+            docker compose -f docker-compose.yml run --rm app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
