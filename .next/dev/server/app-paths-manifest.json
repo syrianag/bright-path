@@ -1,8 +1,1 @@
-{
-  "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/page": "app/page.js",
-  "/associates/login/page": "app/associates/login/page.js",
-  "/associates/dashboard/page": "app/associates/dashboard/page.js",
-  "/associates/progress/page": "app/associates/progress/page.js",
-  "/associates/quiz/page": "app/associates/quiz/page.js"
-}
+{}
