@@ -91,8 +91,12 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            # Ensure GitHub host key is known to avoid interactive prompt
+            mkdir -p ~/.ssh
+            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+
             if [ ! -d ~/my-app ]; then
-              git clone https://github.com/syrianag/bright-path.git ~/my-app
+              git clone git@github.com:syrianag/bright-path.git ~/my-app
             fi
             cd ~/my-app && git pull origin main
             # Ensure Docker Compose plugin is available (install if missing)
