@@ -110,6 +110,13 @@ jobs:
               sudo curl -fSL "https://github.com/docker/compose/releases/download/${COMPOSE_VER}/docker-compose-${BIN_ARCH}" -o /usr/local/lib/docker/cli-plugins/docker-compose
               sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
             fi
+            # Create .env on the EC2 host from GitHub Secrets so Compose has required variables
+            cat > .env <<'EOF'
+DATABASE_URL=${{ secrets.DATABASE_URL }}
+POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+NODE_ENV=production
+EOF
             docker compose -f docker-compose.yml down
             docker compose -f docker-compose.yml up --build -d
             docker compose -f docker-compose.yml run --rm app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
