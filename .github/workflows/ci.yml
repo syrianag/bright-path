@@ -1,96 +1,96 @@
 
 # ===============================
-#         CI/CD PIPELINE
-# ===============================
-# Demonstrates TS.5.1 (Automated Deployment) and TS.5.2 (Cloud Config & Security)
-# All credentials are injected via GitHub Secrets for security.
-#
-# See EVIDENCE.md for skill mapping and screenshot instructions.
-#
-# ---
-#
-# Why secrets should NOT be stored directly in this file:
-#   - Secrets in YAML are visible to anyone with repo access and can be leaked in logs or PRs.
-#   - GitHub Secrets are encrypted, access-controlled, and injected at runtime only.
-#   - This prevents accidental exposure and meets security best practices.
-#
-# How GitHub masks secrets in logs:
-#   - Any value injected from secrets.* is automatically replaced with *** in logs if echoed or printed.
-#   - Attempting to echo a secret (e.g., echo $DATABASE_URL) will show *** instead of the real value.
-#
-# How job dependencies work:
-#   - The 'deploy' job uses 'needs: build-and-test' so it only runs if build-and-test succeeds.
-#   - If build-and-test fails, deploy is skipped, preventing broken code from being deployed.
-#
-# How to identify failed steps:
-#   - In the Actions log, failed steps are marked with a red X and show error output.
-#   - You can expand each step to see which command failed and why.
-
-name: CI/CD
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    env:
-      # Inject DATABASE_URL and POSTGRES_PASSWORD securely from GitHub Secrets (never hardcode secrets!)
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          node-version: '20'
-      - name: Install dependencies
-        run: npm ci
-      - name: Lint code
-        run: npm run lint
-      - name: Create .env file from secrets
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EC2 via SSM
+        env:
+          EC2_INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+          EC2_DEPLOY_KEY: ${{ secrets.EC2_DEPLOY_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          if [[ "${DATABASE_URL:-}" =~ ^postgres(ql)?:// ]]; then
-            DB_URL="$DATABASE_URL"
-          else
-            DB_URL="postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/brightpath_db"
+          set -euxo pipefail
+          # Build deploy script to run on the instance
+          cat > deploy.sh <<'SH'
+#!/bin/bash
+set -eux
+HOME_DIR="/home/ubuntu"
+mkdir -p "$HOME_DIR/.ssh"
+cat > "$HOME_DIR/.ssh/deploy_key" <<'KEY'
+${EC2_DEPLOY_KEY}
+KEY
+chmod 600 "$HOME_DIR/.ssh/deploy_key"
+chown ubuntu:ubuntu "$HOME_DIR/.ssh/deploy_key"
+ssh-keyscan github.com >> "$HOME_DIR/.ssh/known_hosts" 2>/dev/null || true
+# Use deploy key for git operations
+export GIT_SSH_COMMAND="ssh -i $HOME_DIR/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+if [ ! -d "$HOME_DIR/my-app" ]; then
+  sudo -u ubuntu git clone git@github.com:syrianag/bright-path.git "$HOME_DIR/my-app"
+fi
+sudo -u ubuntu bash -lc "cd $HOME_DIR/my-app && git pull origin main"
+# Write .env
+sudo -u ubuntu bash -lc "cat > $HOME_DIR/my-app/.env <<EOF
+DATABASE_URL=${DATABASE_URL}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+SESSION_SECRET=${SESSION_SECRET}
+NODE_ENV=production
+EOF"
+# Install Docker Compose plugin if missing
+if ! docker compose version >/dev/null 2>&1; then
+  echo "Docker Compose plugin not found — installing..."
+  ARCH="$(uname -m)"
+  if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then
+    BIN_ARCH="linux-x86_64"
+  elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+    BIN_ARCH="linux-aarch64"
+  else
+    BIN_ARCH="linux-x86_64"
+  fi
+  COMPOSE_VER="v2.21.0"
+  sudo mkdir -p /usr/local/lib/docker/cli-plugins
+  sudo curl -fSL "https://github.com/docker/compose/releases/download/${COMPOSE_VER}/docker-compose-${BIN_ARCH}" -o /usr/local/lib/docker/cli-plugins/docker-compose
+  sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+fi
+cd "$HOME_DIR/my-app"
+docker compose -f docker-compose.yml down || true
+docker compose -f docker-compose.yml up --build -d
+docker compose -f docker-compose.yml run --rm app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
+SH
+
+          # Use jq to convert script into JSON array of lines
+          if ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y jq
           fi
-          echo "DATABASE_URL=$DB_URL" >> .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
-          echo "NODE_ENV=production" >> .env
-      - name: Build containers
-        run: docker compose -f docker-compose.yml build # Build Docker images
-      - name: Start database service
-        run: docker compose -f docker-compose.yml up -d db # Start only DB for CI tasks
-      - name: Wait for database
-        run: sleep 15 # Wait for DB to be ready (use healthcheck in production)
-      - name: Run migrations
-        run: docker compose -f docker-compose.yml run --rm --no-deps -e DATABASE_URL="$DATABASE_URL" app npm exec --yes --package=prisma@6.19.2 -- prisma migrate deploy
-      - name: Tear down
-        if: always()
-        run: |
-          touch .env
-          docker compose -f docker-compose.yml down -v # Always clean up containers/volumes
+          CMD_ID=$(aws ssm send-command \
+            --instance-ids "$EC2_INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --comment "deploy from GitHub Actions" \
+            --parameters commands="$(jq -Rs -c 'split("\n")[:-1]' deploy.sh)" \
+            --query "Command.CommandId" --output text)
 
-  deploy:
-    needs: build-and-test # Only run if build-and-test succeeds
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1
-        with:
-          # All secrets are injected securely from GitHub Secrets
-          timeout: '1h'
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
+          echo "Sent SSM command: $CMD_ID"
+
+          # Wait for completion
+          for i in {1..120}; do
+            STATUS=$(aws ssm list-command-invocations --command-id "$CMD_ID" --details --query "CommandInvocations[0].Status" --output text || true)
+            echo "SSM status: $STATUS"
+            if [ "$STATUS" = "Success" ]; then
+              break
+            fi
+            if [ "$STATUS" = "Cancelled" ] || [ "$STATUS" = "Failed" ] || [ "$STATUS" = "TimedOut" ] || [ "$STATUS" = "DeliveryTimedOut" ]; then
+              aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID" || true
+              exit 1
+            fi
+            sleep 5
+          done
+          aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID"
             # Ensure GitHub host key is known to avoid interactive prompt
             mkdir -p ~/.ssh
             ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null || true
