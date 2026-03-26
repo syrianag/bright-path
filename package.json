@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint",
+    "ci:local-check": "bash ./scripts/validate-local-ci.sh",
     "build": "next build",
     "dev": "next dev --webpack",
     "start": "next start"
