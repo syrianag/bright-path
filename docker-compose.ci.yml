@@ -4,3 +4,4 @@ services:
       context: .
       args:
         DATABASE_URL: ${DATABASE_URL}
+
