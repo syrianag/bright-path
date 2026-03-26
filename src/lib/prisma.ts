@@ -19,7 +19,10 @@ export function getPrismaClient() {
 
   const pool = globalForPrisma.pool ?? new Pool({ connectionString });
   const adapter = new PrismaPg(pool);
-  const prisma = new PrismaClient({ adapter });
+  // PrismaClient's type definitions may not include the experimental
+  // `adapter` option from @prisma/adapter-pg. Cast to `any` to allow
+  // passing the runtime adapter while keeping TypeScript builds green.
+  const prisma = new PrismaClient({ adapter } as any);
 
   if (process.env.NODE_ENV !== "production") {
     globalForPrisma.pool = pool;
